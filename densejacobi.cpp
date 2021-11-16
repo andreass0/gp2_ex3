@@ -7,7 +7,6 @@
 # include <chrono>
 # include <string.h>
 # include <vector>
-//# include <math.h>
 # include "cmath"
 # include <eigen-3.4.0/Eigen/Dense>
 
@@ -21,11 +20,11 @@ using Eigen::VectorXd;
 int main(){
 
     // Declaring and initializing inputs
-    double resolution = 5;
-    double iterations = 10;
+    int resolution = 5;
+    int iterations = 100;
     double res_plus_ghosts = resolution + 2;
-    int resol_int = resolution;
-    double h = 1 / (resolution - 1);
+//    int resol_int = resolution;
+    double h = 1. / (resolution - 1);
     double pi = M_PI;
     int number_unknowns = pow(resolution, 2) - (4 * resolution - 4);
 
@@ -51,7 +50,6 @@ int main(){
     //RHS-vector: b_h
     //----------------------------------//
 
-    // TODO: Check values.
     // Boundaries for the corner points
     // Bottom
     // Bottom Left Corner
@@ -108,7 +106,7 @@ int main(){
     double y_TL =  h * (resolution - 2);
     int row_TL = number_unknowns - 1 - (1 + resolution - 4);
     b_h(row_TL) = 4 * pi * pi * sin(2 * pi * x_TL) * sinh(2 * pi * y_TL) +
-            4 * pi * pi * sin(2 * pi * x_TL) * sinh(2 * pi);
+            sin(2 * pi * x_TL) * sinh(2 * pi);
 
     x_coord_count = 2;
     // Fill everything in between on the top
@@ -118,7 +116,7 @@ int main(){
         double x_coord =  h * x_coord_count; // x-value moving along the grid in respect to the loop
         double y_coord =  h * (resolution - 2); // y-value moving along the grid in respect to the loop
         b_h(row) = 4 * pi * pi * sin(2 * pi * x_coord) * sinh(2 * pi * y_coord) +
-                   4 * pi * pi * sin(2 * pi * x_coord) * sinh(2 * pi);
+                   sin(2 * pi * x_coord) * sinh(2 * pi);
         x_coord_count++;
 
     }
@@ -128,7 +126,7 @@ int main(){
     double y_TR =  h * (resolution - 2);
     int row_TR = number_unknowns - 1;
     b_h(row_TR) = 4 * pi * pi * sin(2 * pi * x_TR) * sinh(2 * pi * y_TR) +
-            4 * pi * pi * sin(2 * pi * x_TR) * sinh(2 * pi);
+            sin(2 * pi * x_TR) * sinh(2 * pi);
 
     // Multiplying with the constant
     b_h = 1/pow(h,2) * b_h;
@@ -142,7 +140,7 @@ int main(){
     double D_element = 4 + 4 * pi * pi * h * h;
 
     // Creating the diagonal matrix and the identity matrix
-    int size_mat = resol_int - 2;
+    int size_mat = resolution - 2;
     MatrixXd D(size_mat, size_mat);
 //    D <<    D_element, -1, 0,
 //            -1, D_element, -1,
@@ -397,11 +395,3 @@ int main(){
 
     return 0;
 };
-
-//double euclidian_norm(const Eigen::EigenBase<Eigen::VectorXd>& u){
-//    double euclidian_norm = 0;
-//    for (int row = 0; row < u.rows(); row++)
-//    {
-//        euclidian_norm = euclidian_norm + pow(abs(u(row)),2);
-//    }
-//}
